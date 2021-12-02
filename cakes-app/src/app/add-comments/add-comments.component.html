@@ -1,0 +1,35 @@
+<div>Hello World</div>
+<button (submit)="getAllCakes()" type="submit">Get all cakes</button>
+<div *ngFor="let cake of allCakes" class="userCard">
+    {{cake.baker}} {{cake.imageUrl}} {{cake._id}}
+    <img src={{cake.imageUrl}}>
+    <form (submit)="createNewComment( $event, cake._id )">
+        <div>
+            <label for="stars">Give a rating:</label>
+            <select [(ngModel)]="newComment.stars" name="stars" id="stars">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+        <div>
+            <label for="comment">Comment:</label>
+            <textarea [(ngModel)]="newComment.comment" name="comment" id="comment" cols="30" rows="10"></textarea>
+        </div>
+        <div>
+            <button type="submit">
+                Add comment
+            </button>
+        </div>
+
+
+
+
+
+    </form>
+    <div>
+
+    </div>
+</div>

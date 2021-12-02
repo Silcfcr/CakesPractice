@@ -1,0 +1,25 @@
+<h4>Submit a cake to be rated</h4>
+<form (submit)="createNewCake( $event )">
+    <div>
+        <label for="baker">
+            Baker:
+        </label>
+        <input type="text" id="baker" name="baker" [(ngModel)]="newCake.baker">
+    </div>
+    <div>
+        <label for="imageUrl">Add an Image</label>
+        <input type="text" name="imageUrl" id="imageUrl" [(ngModel)]="newCake.imageUrl">
+    </div>
+    <button type="submit">
+        Add user
+    </button>
+</form>
+
+<p>
+    Cake being created:
+</p>
+<div>
+    {{newCake.baker}}
+    {{newCake.imageUrl}}
+    
+</div>

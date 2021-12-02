@@ -1,108 +1,143 @@
-const {TaskModel} = require( './../models/taskModel' );
+const { cakeModel } = require('../models/cakeModel');
+const { commentModel } = require('../models/commentModel')
+
 
 const APIController = {
-    getAll : function( request, response ){
-        TaskModel.getAll()
-            .then( tasks => {
-                response.status( 200 ).json( tasks );
+    getAll: function (request, response) {
+        cakeModel.getAll()
+            .then(tasks => {
+                response.status(200).json(tasks);
             });
     },
-    getOneTask : function( request, response ){
+    getOne: function (request, response) {
         let id = request.params.id;
-        console.log(id);
-        TaskModel.getOneById({ _id: id})
-            .then( data => {
-                response.status( 200 ).json( data );
+
+        cakeModel.getOneById({ _id: id })
+            .then(data => {
+                console.log(id, data);
+                response.status(200).json(data);
             });
     },
-    addNewTask : function( request, response ){
-        let { title, description, completed } = request.body;
+    addNew: function (request, response) {
+        let { baker, imageUrl } = request.body;
 
-        if( title && description){
-            let newTask = {
-                title,
-                description,
-                completed
+        if (baker && imageUrl) {
+            let newCake = {
+                baker,
+                imageUrl
             };
+            console.log(newCake);
 
-            TaskModel
-                .create( newTask )
-                .then( task => {
-                    response.status( 201 ).json( task );
+            cakeModel
+                .create(newCake)
+                .then(data => {
+                    response.status(201).json(data);
                 });
         }
-        else{
-            response.statusMessage = "You are missing a field to create a new task ('title', 'description', 'completed')";
-            response.status( 406 ).end();
-        }      
+        else {
+            response.statusMessage = "You are missing a field to create a new cake";
+            response.status(406).end();
+        }
     },
-    deleteOne : function( request, response ){
+    deleteOne: function (request, response) {
         let id = request.params.id;
+        console.log(id);
 
-        TaskModel
-            .getOneById( {_id : id} )
-            .then( task => {
-                if( task === null ){
-                    throw new Error( "That task doesn't exist" );
+        cakeModel
+            .getOneById({ _id: id })
+            .then(data => {
+                console.log(data);
+                if (data === null) {
+                    throw new Error("That cake doesn't exist");
                 }
-                else{
-                    TaskModel
-                        .deleteOne({ _id: id})
-                        .then( result => {
+                else {
+                    cakeModel
+                        .deleteOne({ _id: id })
+                        .then(result => {
                             console.log("I got here")
-                            response.status( 204 ).end();
+                            response.status(204).end();
                         });
                 }
             })
-            .catch( error => {
+            .catch(error => {
                 console.log("Error")
                 response.statusMessage = error.message;
-                response.status( 404 ).end();
+                response.status(404).end();
             })
 
     },
-    updateTask : function( request, response ){
-        let { title, description, completed } = request.body;
+    updateOne: function (request, response) {
+        let { baker, imageUrl } = request.body;
         let id = request.params.id;
 
         let fieldsToUpdate = {}
 
-        if( title ){
-            fieldsToUpdate.title = title;
+        if (baker) {
+            fieldsToUpdate.baker = baker;
         }
 
-        if( description ){
-            fieldsToUpdate.description = description;
+        if (imageUrl) {
+            fieldsToUpdate.imageUrl = imageUrl;
         }
 
-        if( completed ){
-            fieldsToUpdate.completed = completed;
+        if (Object.keys(fieldsToUpdate).length === 0) {
+            response.statusMessage = "You need to provide at least one of the following fields to update the cake";
+            response.status(406).end();
         }
-        if( Object.keys( fieldsToUpdate ).length === 0 ){
-            response.statusMessage = "You need to provide at least one of the following fields to update the task ('title', 'description', 'completed')";
-            response.status( 406 ).end();
-        }
-        else{
+        else {
             // fieldsToUpdate.updated_at = Date.now;
-            TaskModel
-                .getOneById({ _id: id} )
-                .then( task => {
-                    if( task === null ){
-                        throw new Error( "That task id doesn't exist" );
+            cakeModel
+                .getOneById({ _id: id })
+                .then(data => {
+                    if (data === null) {
+                        throw new Error("That cake id doesn't exist");
                     }
-                    else{
-                        TaskModel
-                            .updateOne( id, fieldsToUpdate )
-                            .then( result => {
-                                response.status( 202 ).json( result );
+                    else {
+                        cakeModel
+                            .updateOne(id, fieldsToUpdate)
+                            .then(result => {
+                                response.status(202).json(result);
                             });
                     }
                 })
-                .catch( error => {
+                .catch(error => {
                     response.statusMessage = error.message;
-                    response.status( 404 ).end();
+                    response.status(404).end();
                 })
 
+        }
+    },
+    addNewComment: function (request, response) {
+        console.log("im getting here")
+        let { stars, comment } = request.body;
+        let id = request.params.id;
+        if (stars && comment) {
+            let newComment = {
+                stars,
+                comment
+            };
+            console.log(newComment);
+
+            commentModel
+                .createComment(newComment)
+                .then(data => {
+                    cakeModel
+                .AddCommentToCake(id, newComment)
+                .then(data => {
+                    if (data === null) {
+                        throw new Error("Error adding comment to cake");
+                    }
+                    else {
+                        response.status(201).json(data);
+                    }
+                });
+                    response.status(201).json(data);
+                });
+            
+        }
+    else {
+        response.statusMessage = "You are missing a field to create a new cake";
+        response.status(406).end();
         }
     }
 }

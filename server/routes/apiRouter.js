@@ -5,13 +5,15 @@ const APIRouter = express.Router();
 APIRouter
     .route( '/' )
     .get( APIController.getAll)
-    .post(APIController.addNewTask);
+    .post(APIController.addNew);
 APIRouter
-    .get('/:id', APIController.getOneTask )
-APIRouter
-    .delete( '/:id', APIController.deleteOne );
+    .route('/:id')
+    .get(APIController.getOne)
+    .delete(APIController.deleteOne );
 
 APIRouter
-    .put( '/:id', APIController.updateTask );
+    .put( '/:id', APIController.updateOne );
+APIRouter
+    .post( '/:id', APIController.addNewComment );
 
 module.exports = { APIRouter };
